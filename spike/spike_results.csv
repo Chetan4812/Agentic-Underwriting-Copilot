@@ -1,0 +1,11 @@
+Question,Expected Doc,Retrieved Doc,Top-K Retrieved,Hit (Y/N)
+What is the maximum debt to income ratio allowed?,POL-DTI-001,POL-LTV-005,"POL-LTV-005, POL-DTI-001, POL-AMT-010",Y
+Are thin file applicants with no credit history automatically declined?,POL-THN-004,POL-THN-004,"POL-THN-004, POL-CRD-003, POL-CRD-003",Y
+How do we handle DAYS_EMPLOYED anomaly or pensioner employment status?,POL-EMP-002,POL-EMP-002,"POL-EMP-002, POL-EMP-002, POL-THN-004",Y
+What are the rules for applicants with a recent bankruptcy?,POL-CRD-003,POL-CRD-003,"POL-CRD-003, POL-EMP-002, POL-THN-004",Y
+Can we approve a loan if the applicant is on active duty in the military?,POL-MIL-012,POL-MIL-012,"POL-MIL-012, POL-THN-004, POL-COI-014",Y
+How many paystubs are required to verify income?,POL-INC-006,POL-INC-006,"POL-INC-006, POL-INC-006, POL-EMP-002",Y
+What should we do if the applicant's name on the application does not match their bureau record?,POL-FRA-009,POL-FRA-009,"POL-FRA-009, POL-ADV-008, POL-COL-011",Y
+What are the adverse action reason codes for denial due to high credit card utilization?,POL-ADV-008,POL-ADV-008,"POL-ADV-008, POL-CRD-003, POL-FRA-009",Y
+Can we approve an application if there is an active collection account?,POL-COL-011,POL-COL-011,"POL-COL-011, POL-CRD-003, POL-FRA-009",Y
+Is age or gender allowed to be used when assessing credit risk?,POL-FAR-007,POL-FAR-007,"POL-FAR-007, POL-CRD-003, POL-THN-004",Y

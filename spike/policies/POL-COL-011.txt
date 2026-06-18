@@ -1,0 +1,5 @@
+Collections, Charge-offs, and Active Disputes.
+    Active collection accounts indicate significant credit distress.
+    Any applicant with an active, unresolved collection account exceeding $500 is ineligible for auto-approval.
+    Active medical collections are exempt from this limit.
+    Applicants with active trade disputes must be referred to a human underwriter to verify the dispute resolution status.

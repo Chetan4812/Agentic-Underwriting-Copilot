@@ -1,0 +1,4 @@
+Fraud Detection and Identity Consistency Safeguards.
+    This policy details controls for detecting identity fraud, synthetic fraud, and application manipulation.
+    If the applicant's name on the application does not match the name on the credit bureau record, the application is flagged for high fraud risk.
+    Similarly, any active mismatch in Social Security Number (SSN) or national identifier records between the application and the bureau database must trigger an immediate freeze and manual verification.

@@ -1,0 +1,5 @@
+Income Verification and Income Discrepancy Reconciliation.
+    Halcyon Credit mandates verification of gross monthly income prior to loan disbursal.
+    Applicants must provide at least two (2) consecutive recent paystubs from the last 60 days, or three (3) consecutive months of bank statements showing regular direct deposit income.
+    If the difference between self-reported income on the application and verified direct deposit income exceeds 15%, an income discrepancy flag is triggered.
+    The Income & Employment Agent must route such cases for manual document verification by a frontline underwriter.

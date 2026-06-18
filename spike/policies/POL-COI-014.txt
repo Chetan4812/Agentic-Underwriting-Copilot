@@ -1,0 +1,4 @@
+Conflict of Interest and Employee Lending.
+    Lending to Halcyon Credit employees, directors, or major shareholders requires independent oversight.
+    All employee loan applications must bypass the standard automated recommendation flow.
+    These applications must be routed to the Internal Audit and Compliance committee for board-level review and manual sign-off.

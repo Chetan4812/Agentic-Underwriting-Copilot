@@ -1,0 +1,4 @@
+Know Your Customer (KYC) and Anti-Money Laundering (AML) Compliance.
+    To comply with BSA and AML regulations, Halcyon Credit must verify the identity of all applicants.
+    Verifications require a valid government-issued photo ID (driver's license or passport) and an automated comparison against the OFAC sanctions list.
+    Any positive match on the OFAC registry triggers an immediate compliance hold and referral to the AML Officer.

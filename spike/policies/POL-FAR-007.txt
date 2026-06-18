@@ -1,0 +1,5 @@
+Fair Lending Compliance and Anti-Discrimination Policy.
+    Halcyon Credit complies fully with the Equal Credit Opportunity Act (ECOA).
+    Decisions must be based solely on credit risk indicators and repayment capacity.
+    No underwriting agent, human or automated, may use protected attributes—including gender (CODE_GENDER), age (DAYS_BIRTH), race, religion, or marital status—as inputs to credit scoring models or underwriting decisions.
+    Gender and age fields must be redacted during data ingestion and only used retrospectively by the Fairness Agent to compute segment approval rates and audit for statistical bias.

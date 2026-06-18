@@ -1,0 +1,5 @@
+Loan-to-Value (LTV) and Leverage Ratio Limits.
+    This policy caps the amount of credit extended based on the applicant's income.
+    The Credit-to-Income ratio (total credit amount requested / gross annual income) must not exceed 4.0 for standard applicants.
+    For thin-file applicants, the Credit-to-Income ratio must not exceed 2.0.
+    Any request exceeding these leverage ratios must be truncated to the maximum allowed limit or escalated for senior underwriter sign-off.

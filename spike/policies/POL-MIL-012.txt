@@ -1,0 +1,5 @@
+Military Lending Act (MLA) Compliance Policy.
+    The Military Lending Act protects active-duty service members, their spouses, and dependents.
+    Halcyon Credit is prohibited from charging service members a Military Annual Percentage Rate (MAPR) exceeding 36%.
+    All active-duty applications must pass an automated database check against the Defense Manpower Data Center (DMDC) registry.
+    If verified as active military, the application must be assigned a maximum MAPR cap of 36% and must not include mandatory arbitration clauses.

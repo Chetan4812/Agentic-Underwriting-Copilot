@@ -1,0 +1,6 @@
+Employment Tenure and Income Stability Guidelines.
+    Halcyon Credit requires applicants to demonstrate stable employment to ensure repayment capacity.
+    Standard applicants must have a minimum of six (6) months of continuous employment with their current employer.
+    Exceptions apply for pensioners and retirees. Unemployed applicants or those receiving pension benefits must have their income verified through bank deposits showing at least three consecutive monthly pension disbursements.
+    If a sentinel value of DAYS_EMPLOYED = 365243 is detected, it indicates a pensioner or unemployed applicant.
+    Underwriters must manually review these accounts to verify their source of income and must not apply standard employment duration checks.

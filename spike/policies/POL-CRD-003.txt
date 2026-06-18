@@ -1,0 +1,5 @@
+Credit History and Bankruptcy Policy.
+    This policy governs the treatment of negative credit history events, including bankruptcies, charge-offs, and defaults.
+    Any applicant with an active or open bankruptcy filing within the last seven (7) years is ineligible for credit and must be auto-declined.
+    Applicants with a settled bankruptcy more than three (3) years ago may be approved, subject to thin-file alternative verification.
+    Any applicant with a credit default or charge-off event on any trade line in the last twelve (12) months must be flagged as a high credit risk and referred to a senior underwriter.

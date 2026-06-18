@@ -1,0 +1,5 @@
+Thin-File and Alternative Credit Data Policy.
+    Halcyon Credit serves digital consumer applicants, many of whom have thin or non-traditional credit files (fewer than two credit bureau trade lines).
+    Thin-file applicants must not be auto-declined solely due to a lack of traditional bureau history.
+    Instead, alternative credit indicators must be verified. This includes verifying consistent utility bill payments, cell phone bill payments, or rental payment history for the past twelve (12) consecutive months.
+    If alternative verification succeeds, the applicant may be assigned a synthetic risk tier and considered for approval with a capped loan amount.

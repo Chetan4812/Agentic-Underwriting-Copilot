@@ -1,0 +1,5 @@
+Loan Amount Limits and Underwriter Approval Limits.
+    The maximum personal loan amount offered by Halcyon Credit is $50,000.
+    Frontline underwriters have authority to approve loans up to $25,000.
+    Loans between $25,001 and $50,000 require senior underwriter approval.
+    Any recommendation by the copilot for a loan exceeding $25,000 must be routed to the senior underwriter escalation queue, even if the model risk assessment is low.

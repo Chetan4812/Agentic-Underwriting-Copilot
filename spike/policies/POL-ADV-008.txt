@@ -1,0 +1,9 @@
+Adverse Action Notification and Reason Code Taxonomy.
+    Under the Fair Credit Reporting Act (FCRA), when an applicant is declined, Halcyon Credit must provide specific adverse action reasons.
+    Explanations must not use vague or boilerplate reason codes.
+    The Explanation Writer must map the decision to one of the approved regulatory codes:
+    - Code 'ADV-DTI': Monthly debt payments too high relative to income.
+    - Code 'ADV-DEL': Unresolved recent delinquency or credit default.
+    - Code 'ADV-EMP': Insufficient or unverifiable employment history.
+    - Code 'ADV-THN': Lack of established credit history with insufficient alternative data.
+    Each code must cite the primary SHAP factor driving the risk score.

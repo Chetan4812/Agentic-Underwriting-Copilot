@@ -1,0 +1,6 @@
+Debt-to-Income (DTI) Limits and Calculation Policy.
+    This policy defines how Halcyon Credit assesses an applicant's monthly debt payments relative to gross income.
+    The primary metric is the Debt-to-Income (DTI) ratio, calculated as (monthly credit payment + other recurring monthly debt payments) / gross monthly income.
+    The maximum allowable DTI ratio for any personal loan is 50%.
+    Any application with a DTI ratio exceeding 50% must be flagged as a hard stop and recommended for decline.
+    If the DTI is between 40% and 50%, the application must be routed for manual underwriter review.

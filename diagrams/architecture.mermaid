@@ -1,0 +1,43 @@
+graph TD
+    classDef orchestrator fill:#d4edda,stroke:#28a745,stroke-width:2px;
+    classDef worker fill:#cce5ff,stroke:#007bff,stroke-width:2px;
+    classDef critic fill:#fff3cd,stroke:#ffc107,stroke-width:2px;
+    classDef external fill:#f8d7da,stroke:#dc3545,stroke-width:2px;
+    classDef fallback fill:#e2e3e5,stroke:#383d41,stroke-width:2px;
+
+    User([Applicant / Loan Application]) --> Ingestion[API Ingestion / FastAPI]
+    Ingestion --> Gateway[LiteLLM Gateway]
+    Gateway --> Orchestrator[LangGraph Orchestrator]:::orchestrator
+
+    subgraph Specialist Workers
+        Orchestrator --> DataAssembly[Data Assembly Agent]:::worker
+        DataAssembly --> IncomeVerify[Income & Employment Agent]:::worker
+        DataAssembly --> CreditHistory[Credit History Agent]:::worker
+        
+        IncomeVerify --> RiskScoring[Risk Scoring Agent]:::worker
+        CreditHistory --> RiskScoring
+        
+        RiskScoring --> PolicyCompliance[Policy & Compliance Agent]:::worker
+        RiskScoring --> FairnessCheck[Fairness & Bias Agent]:::worker
+    end
+
+    subgraph Data & ML Services
+        DataAssembly --> Database[(Loan DB / 7 Tables)]
+        RiskScoring --> RiskModel[Trained LightGBM + SHAP]:::external
+        PolicyCompliance --> ChromaDB[(Chroma Vector DB / Policies)]
+    end
+
+    PolicyCompliance --> Critic[Adjudication Critic]:::critic
+    FairnessCheck --> Critic
+
+    Critic -- Approve (First Pass) --> ExplWriter[Explanation Writer Agent]:::worker
+    Critic -- Reject / Revision Needed (Max 1) --> WorkersRetry[Specialists Revision]:::critic
+    WorkersRetry --> Critic
+    
+    Critic -- Fail / Thin File / Escalation --> HumanEscalation[Human Escalation Agent]:::fallback
+    
+    ExplWriter --> OutDecision[DecisionRecord / JSON Store]
+    HumanEscalation --> OutReferral[ReferralPackage / Underwriter Queue]
+
+    class Ingestion,Gateway external;
+    class Database,ChromaDB,OutDecision,OutReferral external;

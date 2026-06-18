@@ -1,0 +1,61 @@
+sequenceDiagram
+    autonumber
+    actor Underwriter as Human Underwriter / Queue
+    participant Ingestion as FastAPI Ingestion
+    participant Orchestrator as LangGraph Orchestrator
+    participant Worker as Specialist Agents (Data/Income/Credit/Risk)
+    participant Policy as Policy & Compliance Agent (RAG)
+    participant Critic as Adjudication Critic
+    participant Writer as Explanation Writer Agent
+    participant HumanEsc as Human Escalation Agent
+    participant DB as SQLite / Chroma Vector DB
+    participant ML as LightGBM Risk Model (SHAP)
+
+    Underwriter->>Ingestion: Submit Loan Application (SK_ID_CURR)
+    Ingestion->>Orchestrator: Initialize State Machine
+    Orchestrator->>Worker: Dispatch Data Assembly
+    Worker->>DB: Query 7 tables (Bureau, Application, etc.)
+    DB-->>Worker: Return Raw Tables
+    Worker-->>Orchestrator: Return ApplicantFile (typed)
+
+    Orchestrator->>Worker: Verify Income & Credit History (Parallel)
+    Worker-->>Orchestrator: Verified Income + Credit Summary (Thin-File flag)
+
+    alt Thin File Flagged
+        Orchestrator->>HumanEsc: Route to Human Escalation
+        HumanEsc->>DB: Write ReferralPackage
+        HumanEsc-->>Underwriter: Notify Referral Queue
+    else Standard File
+        Orchestrator->>Worker: Risk Scoring
+        Worker->>ML: Pass Feature Vector
+        ML-->>Worker: Calibrated PD + SHAP Factors
+        Worker-->>Orchestrator: Return RiskScoringResult
+
+        Orchestrator->>Policy: Policy Verification & Fairness Auditing
+        Policy->>DB: Query policy embeddings (Chroma)
+        DB-->>Policy: Return Top-K Policy Clauses (Hit/Miss)
+        Policy-->>Orchestrator: Return Compliance & Fairness Results
+
+        Orchestrator->>Critic: Submit Draft Decision Package
+        Critic->>Critic: Verify Faithfulness (SHAP vs Text) & Guardrails
+        
+        alt Critique Fails (Revision loop, max 1 retry)
+            Critic->>Orchestrator: Request Re-run / Refinement
+            Orchestrator->>Worker: Refine outputs
+            Worker-->>Orchestrator: Return Refined outputs
+            Orchestrator->>Critic: Re-submit Package
+        end
+
+        alt Approved by Critic
+            Orchestrator->>Writer: Generate Grounded Explanation
+            Writer->>DB: Fetch Regulator Adverse-Action Codes
+            DB-->>Writer: Return Citation Texts
+            Writer->>Writer: Compile Narrative with Citations
+            Writer-->>Orchestrator: Return DecisionRecord
+            Orchestrator->>Underwriter: Publish Recommendation to Queue
+        else Rejected or Low Confidence
+            Orchestrator->>HumanEsc: Route to Human Escalation
+            HumanEsc->>DB: Compile referral package
+            HumanEsc-->>Underwriter: Notify Referral Queue
+        end
+    end

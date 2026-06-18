@@ -65,3 +65,22 @@ python retrieval_spike.py
 | Policy Adherence | 100% hard-stop compliance | Any hard-stop violation released |
 | Cost per Application | ≤ $0.05 avg | > $0.15 any single application |
 | p95 Latency | ≤ 30s | > 60s |
+
+---
+
+## Week 16 Build Reflections
+
+During the development and evaluation of the evaluable core vertical slice, we identified several critical failure modes and refined our operational guardrails:
+
+1. **Where Retrieval Failed (Semantic Vector Collision)**:
+   In our baseline dense retriever trials (using `all-MiniLM-L6-v2`), queries regarding the Debt-to-Income (DTI) ratio limits (e.g., "What is the maximum debt to income ratio allowed?") frequently retrieved the Loan-to-Value (LTV) and leverage ratio policy (`POL-LTV-005`) as the Top-1 result rather than the actual DTI policy (`POL-DTI-001`). This failure was caused by a semantic vector space collision: both policies heavily use adjacent terms like "Credit-to-Income", "income ratio", and "debt-to-income ratio". Slicing at fixed 80-word windows diluted the unique rule terminology, leading to semantic dilution. We resolved this by transitioning to a **Rule-per-Chunk Markdown Chunking** (`rule_based`) strategy, separating distinct policy clauses into isolated vector records.
+
+2. **Where Generation Failed (Hallucination under Prompt V1)**:
+   Under the generic QA Prompt (Prompt V1), the Explanation Writer LLM hallucinated non-existent policy limits and credit parameters (such as declaring that applicants were declined due to "poor payment history" or inventing a specific dollar amount for maximum loan limits) that were not present in the retrieved context. Because Prompt V1 only instructed the model to "explain the reasons clearly", the model relied on its pre-trained parametric knowledge instead of strict grounding. Implementing Prompt V2 (SHAP-Grounded Prompt) eliminated this by strictly binding generated narratives to local SHAP attribution scores and requiring explicit bracketed citations (e.g., `[POL-DTI-001]`) for every policy claim.
+
+3. **Misleading Metric (Faithfulness on Incorrect Context)**:
+   We discovered that **Faithfulness** alone can be highly misleading. During the DTI retrieval failure, the LLM generated an answer that was 100% faithful to the retrieved chunk (`POL-LTV-005`), resulting in a perfect Faithfulness score of 1.0. However, the answer was completely incorrect and irrelevant to the applicant's query. This highlighted the necessity of evaluating **Context Precision** and **Answer Relevancy** in tandem: a system can be perfectly faithful to incorrect context, producing a fluent but entirely wrong compliance decision.
+
+4. **Revised KPI (p95 Cost Ceiling and Critic Retry Limit)**:
+   To prevent runaway API costs from the Adjudication Critic's evaluator-optimizer loop, we revised our **Cost per Application** KPI. In Week 15, we targeted an average cost of ≤ $0.05 without a hard limit on the critic loop. In Week 16, we established a **p95 Cost Ceiling of $0.15** per application and hard-coded a **maximum of 1 critic retry**. This prevents the critic from triggering infinite self-correction loops when the explanation writer struggles to ground complex multi-hop decisions, ensuring deterministic cost bounds.
+

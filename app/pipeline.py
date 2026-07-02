@@ -21,6 +21,10 @@ class UnderwritingPipeline:
     def __init__(self, db_path: str = "app_chroma_db", chunk_strategy: str = "rule_based", chunk_size: int = 512):
         self.retriever = UnderwritingRetriever(db_path=db_path, chunk_strategy=chunk_strategy, chunk_size=chunk_size)
         self.risk_model = CalibratedRiskModel()
+        try:
+            self.precomputed_features = pd.read_pickle("input/precomputed_features.pkl").set_index("SK_ID_CURR")
+        except Exception:
+            self.precomputed_features = None
 
     def _load_data_from_csv(self, sk_id_curr: int) -> Dict[str, Any]:
         """Loads and joins raw records from the sample CSV tables for the given applicant ID."""
@@ -123,6 +127,14 @@ class UnderwritingPipeline:
                     "ext_source_scores": [0.65, 0.70, 0.62], "gender": "F", "age_group": "40-49"
                 }
 
+        xgb_feats = None
+        if hasattr(self, 'precomputed_features') and self.precomputed_features is not None:
+            if sk_id in self.precomputed_features.index:
+                row = self.precomputed_features.loc[sk_id]
+                if isinstance(row, pd.DataFrame):
+                    row = row.iloc[0]
+                xgb_feats = row.to_dict()
+
         # Structure normalized ApplicantFile
         return ApplicantFile(
             sk_id_curr=sk_id,
@@ -138,7 +150,8 @@ class UnderwritingPipeline:
             prior_applications=PriorApplicationSummary(**raw.get("prior_applications", {})),
             ext_source_scores=raw.get("ext_source_scores", [None, None, None]),
             gender=raw.get("gender", "F"),
-            age_group=raw.get("age_group", "30-39")
+            age_group=raw.get("age_group", "30-39"),
+            xgb_features=xgb_feats
         )
 
     @observe(name="agent_income_employment")

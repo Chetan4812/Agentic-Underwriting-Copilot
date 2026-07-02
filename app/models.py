@@ -36,6 +36,7 @@ class ApplicantFile(BaseModel):
     ext_source_scores: List[Optional[float]]
     gender: str = "Unspecified"     # for fairness checks
     age_group: str = "Unspecified"  # for fairness checks
+    xgb_features: Optional[Dict[str, float]] = Field(default=None, exclude=True)
 
 class ShapFactor(BaseModel):
     feature_name: str

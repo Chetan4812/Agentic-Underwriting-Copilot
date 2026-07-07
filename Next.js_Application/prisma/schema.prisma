@@ -1,0 +1,222 @@
+// Prisma schema for the Agentic Underwriting Copilot web application.
+// Mirrors the FastAPI AI service data contracts (DecisionRecord / ReferralPackage).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  OPERATIONS_LEAD
+  COMPLIANCE_OFFICER
+  SENIOR_UNDERWRITER
+  FRONTLINE_UNDERWRITER
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  ESCALATED
+}
+
+enum RiskTier {
+  low
+  medium
+  high
+  very_high
+}
+
+enum ShapEffect {
+  increase_risk
+  decrease_risk
+}
+
+// ---------------------------------------------------------------------------
+// Users
+// ---------------------------------------------------------------------------
+
+model User {
+  id                String    @id @default(cuid())
+  name              String
+  email             String    @unique
+  role              UserRole  @default(FRONTLINE_UNDERWRITER)
+  passwordHash      String    @map("password_hash")
+  isActive          Boolean   @default(true) @map("is_active")
+  mustResetPassword Boolean   @default(false) @map("must_reset_password")
+  lastLoginAt       DateTime? @map("last_login_at")
+  createdById       String?   @map("created_by_id")
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  assignedApplications UnderwritingApplication[] @relation("AssignedUnderwriter")
+  actionedDecisions    DecisionRecord[]          @relation("ActionedByUser")
+  overrides            UnderwriterOverride[]
+
+  @@index([role])
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// Underwriting applications (keyed by sk_id_curr from the AI backend)
+// ---------------------------------------------------------------------------
+
+model UnderwritingApplication {
+  skIdCurr       Int               @id @map("sk_id_curr")
+  submissionDate DateTime          @default(now()) @map("submission_date")
+  status         ApplicationStatus @default(PENDING)
+  loanAmount     Float             @map("loan_amount")
+  dtiRatio       Float             @map("dti_ratio")
+
+  // Raw + normalised applicant payloads mirrored from the AI service.
+  rawFields      Json?             @map("raw_fields")
+  applicantFile  Json?             @map("applicant_file")
+
+  assignedToUserId String? @map("assigned_to_user_id")
+  assignedTo       User?   @relation("AssignedUnderwriter", fields: [assignedToUserId], references: [id])
+
+  assessment      Assessment?
+  decisionRecord  DecisionRecord?
+  referralPackage ReferralPackage?
+  shapFactors     ShapFactor[]
+  policyCitations PolicyCitation[]
+  overrides       UnderwriterOverride[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([assignedToUserId])
+  @@map("underwriting_applications")
+}
+
+// ---------------------------------------------------------------------------
+// Assessments (RiskScoringResult projection)
+// ---------------------------------------------------------------------------
+
+model Assessment {
+  id                   String   @id @default(cuid())
+  applicationId        Int      @unique @map("application_id")
+  defaultProbability   Float    @map("default_probability")
+  riskTier             RiskTier @map("risk_tier")
+  confidenceBandLower  Float    @map("confidence_band_lower")
+  confidenceBandUpper  Float    @map("confidence_band_upper")
+  lowConfidenceFlag    Boolean  @default(false) @map("low_confidence_flag")
+  thinFileFlag         Boolean  @default(false) @map("thin_file_flag")
+  fairnessFlag         Boolean  @default(false) @map("fairness_flag")
+  createdAt            DateTime @default(now())
+
+  application UnderwritingApplication @relation(fields: [applicationId], references: [skIdCurr], onDelete: Cascade)
+
+  @@map("assessments")
+}
+
+// ---------------------------------------------------------------------------
+// SHAP factors (local explainability)
+// ---------------------------------------------------------------------------
+
+model ShapFactor {
+  id            String     @id @default(cuid())
+  applicationId Int        @map("application_id")
+  featureName   String     @map("feature_name")
+  shapValue     Float      @map("shap_value")
+  effect        ShapEffect
+
+  application UnderwritingApplication @relation(fields: [applicationId], references: [skIdCurr], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("shap_factors")
+}
+
+// ---------------------------------------------------------------------------
+// Decision records (final DecisionRecord contract)
+// ---------------------------------------------------------------------------
+
+model DecisionRecord {
+  id                    String   @id @default(cuid())
+  applicationId         Int      @unique @map("application_id")
+  decisionRecommendation String  @map("decision_recommendation")
+  confidence            Float
+  explanationNarrative  String   @map("explanation_narrative")
+  topReasons            String[] @map("top_reasons")
+  policyCitations       String[] @map("policy_citations")
+  auditTrail            Json     @map("audit_trail")
+  finalCostUsd          Float    @default(0) @map("final_cost_usd")
+
+  actionedByUserId String?   @map("actioned_by_user_id")
+  actionedBy       User?     @relation("ActionedByUser", fields: [actionedByUserId], references: [id])
+  actionedAt       DateTime? @map("actioned_at")
+
+  // Adverse action reason captured at adjudication time (for declines).
+  adverseActionCode String? @map("adverse_action_code")
+
+  createdAt DateTime @default(now())
+
+  application UnderwritingApplication @relation(fields: [applicationId], references: [skIdCurr], onDelete: Cascade)
+
+  @@map("decision_records")
+}
+
+// ---------------------------------------------------------------------------
+// Policy citations
+// ---------------------------------------------------------------------------
+
+model PolicyCitation {
+  id            String @id @default(cuid())
+  applicationId Int    @map("application_id")
+  clauseId      String @map("clause_id")
+  textSnippet   String @map("text_snippet")
+  passed        Boolean? // pass/fail from rule_pass_fail if available
+
+  application UnderwritingApplication @relation(fields: [applicationId], references: [skIdCurr], onDelete: Cascade)
+
+  @@index([applicationId])
+  @@map("policy_citations")
+}
+
+// ---------------------------------------------------------------------------
+// Referral packages (ReferralPackage contract)
+// ---------------------------------------------------------------------------
+
+model ReferralPackage {
+  id               String   @id @default(cuid())
+  applicationId    Int      @unique @map("application_id")
+  reasonForReferral String  @map("reason_for_referral")
+  escalationFlags  String[] @map("escalation_flags")
+  partialFindings  Json     @map("partial_findings")
+  referredAt       DateTime @default(now()) @map("referred_at")
+
+  application UnderwritingApplication @relation(fields: [applicationId], references: [skIdCurr], onDelete: Cascade)
+
+  @@map("referral_packages")
+}
+
+// ---------------------------------------------------------------------------
+// Underwriter overrides (audit trail of manual overrules)
+// ---------------------------------------------------------------------------
+
+model UnderwriterOverride {
+  id                String   @id @default(cuid())
+  applicationId     Int      @map("application_id")
+  userId            String   @map("user_id")
+  originalVerdict   String   @map("original_verdict")
+  overriddenVerdict String   @map("overridden_verdict")
+  overrideReason    String   @map("override_reason")
+  timestamp         DateTime @default(now())
+
+  application UnderwritingApplication @relation(fields: [applicationId], references: [skIdCurr], onDelete: Cascade)
+  user        User                    @relation(fields: [userId], references: [id])
+
+  @@index([applicationId])
+  @@map("underwriter_overrides")
+}

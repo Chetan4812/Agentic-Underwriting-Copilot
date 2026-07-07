@@ -1,0 +1,66 @@
+# ---------------------------------------------------------------------------
+# Agentic Underwriting Copilot - full stack
+# Brings up: PostgreSQL + the Next.js web app.
+# The FastAPI AI service (9-agent pipeline) is expected to be reachable at
+# AI_SERVICE_BASE_URL. A commented `ai-service` stub is included for reference.
+# ---------------------------------------------------------------------------
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: uc_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: copilot
+      POSTGRES_PASSWORD: copilot
+      POSTGRES_DB: underwriting
+    ports:
+      - "5435:5432"
+    volumes:
+      - uc_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U copilot -d underwriting"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uc_web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://copilot:copilot@db:5432/underwriting?schema=public"
+      # Point this at your running FastAPI AI service.
+      # If you run it as another compose service named `ai-service`, use http://ai-service:8000
+      AI_SERVICE_BASE_URL: "${AI_SERVICE_BASE_URL:-http://host.docker.internal:8000}"
+      AI_SERVICE_API_KEY: "${AI_SERVICE_API_KEY:-}"
+      AI_SERVICE_TIMEOUT_MS: "45000"
+      DEMO_CURRENT_USER_EMAIL: "priya@halcyoncredit.com"
+      NODE_ENV: "production"
+    ports:
+      - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ---------------------------------------------------------------------------
+  # Reference stub for the existing FastAPI AI execution service.
+  # Uncomment and point `image`/`build` at your own service to run everything
+  # together. The web app only needs it reachable at AI_SERVICE_BASE_URL.
+  # ---------------------------------------------------------------------------
+  # ai-service:
+  #   image: your-org/agentic-underwriting-ai:latest
+  #   container_name: uc_ai
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     OPENAI_API_KEY: "${OPENAI_API_KEY}"
+
+volumes:
+  uc_pgdata:

@@ -1,4 +1,14 @@
+import os
+
+# Load .env from the project root (picks up OPENAI_API_KEY etc.)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed; env vars must be set manually
+
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
 from typing import Dict, Any, Union
@@ -10,6 +20,19 @@ app = FastAPI(
     title="Agentic Underwriting Copilot API",
     description="FastAPI service for the Halcyon Credit underwriting orchestrator pipeline.",
     version="1.0"
+)
+
+# Allow the Next.js frontend (dev and prod) to call this service.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Instantiate the orchestration pipeline

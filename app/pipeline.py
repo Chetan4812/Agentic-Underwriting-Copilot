@@ -15,7 +15,11 @@ from app.models import (
 from app.retriever import UnderwritingRetriever
 from app.risk_scoring import CalibratedRiskModel
 
-CSV_DIR = "/Users/anirudhsharma/Downloads/home-credit-default-risk - Copy"
+CSV_DIR = os.environ.get(
+    "CSV_DIR",
+    "/Users/anirudhsharma/Downloads/home-credit-default-risk - Copy"
+)
+
 
 class UnderwritingPipeline:
     def __init__(self, db_path: str = "app_chroma_db", chunk_strategy: str = "rule_based", chunk_size: int = 512):

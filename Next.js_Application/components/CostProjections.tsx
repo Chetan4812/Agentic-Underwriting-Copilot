@@ -153,60 +153,61 @@ export function CostProjections() {
 
         <CardContent className="space-y-6">
           {/* Mockup Comparison Table */}
-          <div className="overflow-hidden rounded-lg border border-border/40 bg-black/20">
+          {/* Mockup Comparison Table */}
+          <div className="overflow-hidden rounded-lg border border-border/70 bg-card shadow-sm">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-border/40 bg-muted/30 text-muted-foreground font-semibold">
-                  <th className="p-3 w-[40%]">Cost line</th>
-                  <th className="p-3 text-right">Average run</th>
-                  <th className="p-3 text-right">Worst-case run</th>
+                <tr className="border-b border-border bg-slate-100/75 text-slate-800 font-bold">
+                  <th className="p-3 w-[40%] text-[11px] uppercase tracking-wider">Cost line</th>
+                  <th className="p-3 text-right text-[11px] uppercase tracking-wider">Average run</th>
+                  <th className="p-3 text-right text-[11px] uppercase tracking-wider">Worst-case run</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/20">
-                <tr className="hover:bg-muted/10 transition-colors">
-                  <td className="p-3 font-medium">
+              <tbody className="divide-y divide-border/60">
+                <tr className="hover:bg-slate-50/75 transition-colors">
+                  <td className="p-3 font-semibold text-slate-800">
                     Model tokens (calls × tokens × price)
-                    <span className="block text-[10px] text-muted-foreground mt-0.5">
+                    <span className="block text-[10px] text-muted-foreground font-medium mt-0.5">
                       Avg: {avgVars.calls} calls, {avgVars.tokens / 1000}k tok | Worst: {worstVars.calls} calls, {worstVars.tokens / 1000}k tok
                     </span>
                   </td>
-                  <td className="p-3 text-right font-semibold text-teal-400">{formatPrice(avgCosts.tokens)}</td>
-                  <td className="p-3 text-right font-semibold text-amber-500">{formatPrice(worstCosts.tokens)}</td>
+                  <td className="p-3 text-right font-bold text-emerald-600 text-sm">{formatPrice(avgCosts.tokens)}</td>
+                  <td className="p-3 text-right font-bold text-amber-600 text-sm">{formatPrice(worstCosts.tokens)}</td>
                 </tr>
-                <tr className="hover:bg-muted/10 transition-colors">
-                  <td className="p-3 font-medium">
+                <tr className="hover:bg-slate-50/75 transition-colors">
+                  <td className="p-3 font-semibold text-slate-800">
                     Retries + fallback runs
-                    <span className="block text-[10px] text-muted-foreground mt-0.5">
+                    <span className="block text-[10px] text-muted-foreground font-medium mt-0.5">
                       Model outages and critic self-correction cycles
                     </span>
                   </td>
-                  <td className="p-3 text-right font-semibold text-teal-400">{formatPrice(avgCosts.retries)}</td>
-                  <td className="p-3 text-right font-semibold text-amber-500">{formatPrice(worstCosts.retries)}</td>
+                  <td className="p-3 text-right font-bold text-emerald-600 text-sm">{formatPrice(avgCosts.retries)}</td>
+                  <td className="p-3 text-right font-bold text-amber-600 text-sm">{formatPrice(worstCosts.retries)}</td>
                 </tr>
-                <tr className="hover:bg-muted/10 transition-colors">
-                  <td className="p-3 font-medium">
+                <tr className="hover:bg-slate-50/75 transition-colors">
+                  <td className="p-3 font-semibold text-slate-800">
                     Infra (endpoint hours ÷ monthly outcomes)
-                    <span className="block text-[10px] text-muted-foreground mt-0.5">
+                    <span className="block text-[10px] text-muted-foreground font-medium mt-0.5">
                       Monthly Host Cost (Rs {avgVars.infraHostCostRs.toLocaleString()}) divided by volume
                     </span>
                   </td>
-                  <td className="p-3 text-right font-semibold text-teal-400">{formatPrice(avgCosts.infra)}</td>
-                  <td className="p-3 text-right font-semibold text-amber-500">{formatPrice(worstCosts.infra)}</td>
+                  <td className="p-3 text-right font-bold text-emerald-600 text-sm">{formatPrice(avgCosts.infra)}</td>
+                  <td className="p-3 text-right font-bold text-amber-600 text-sm">{formatPrice(worstCosts.infra)}</td>
                 </tr>
-                <tr className="hover:bg-muted/10 transition-colors">
-                  <td className="p-3 font-medium">
+                <tr className="hover:bg-slate-50/75 transition-colors">
+                  <td className="p-3 font-semibold text-slate-800">
                     Human minutes at H gates (mins × rate × trigger %)
-                    <span className="block text-[10px] text-muted-foreground mt-0.5">
+                    <span className="block text-[10px] text-muted-foreground font-medium mt-0.5">
                       Avg: {avgVars.humanTriggerPct}% review risk | Worst: {worstVars.humanTriggerPct}% review risk
                     </span>
                   </td>
-                  <td className="p-3 text-right font-semibold text-teal-400">{formatPrice(avgCosts.human)}</td>
-                  <td className="p-3 text-right font-semibold text-amber-500">{formatPrice(worstCosts.human)}</td>
+                  <td className="p-3 text-right font-bold text-emerald-600 text-sm">{formatPrice(avgCosts.human)}</td>
+                  <td className="p-3 text-right font-bold text-amber-600 text-sm">{formatPrice(worstCosts.human)}</td>
                 </tr>
-                <tr className="bg-primary/5 text-foreground font-bold border-t-2 border-border/80">
-                  <td className="p-4 text-sm">Cost per outcome</td>
-                  <td className="p-4 text-right text-sm text-teal-400 drop-shadow-[0_0_12px_rgba(45,212,191,0.15)]">{formatTotal(avgCosts.total)}</td>
-                  <td className="p-4 text-right text-sm text-amber-500 drop-shadow-[0_0_12px_rgba(245,158,11,0.15)]">{formatTotal(worstCosts.total)}</td>
+                <tr className="bg-primary/5 text-slate-900 font-bold border-t-2 border-border">
+                  <td className="p-4 text-sm font-bold text-slate-800">Cost per outcome</td>
+                  <td className="p-4 text-right text-base text-emerald-700 font-extrabold">{formatTotal(avgCosts.total)}</td>
+                  <td className="p-4 text-right text-base text-amber-700 font-extrabold">{formatTotal(worstCosts.total)}</td>
                 </tr>
               </tbody>
             </table>

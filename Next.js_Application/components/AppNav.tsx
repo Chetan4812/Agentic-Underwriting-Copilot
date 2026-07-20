@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutList, ShieldCheck, Activity, Boxes, Users, Plus, LogOut } from 'lucide-react';
+import { LayoutList, ShieldCheck, Activity, Boxes, Users, Plus, LogOut, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 const NAV = [
+  { href: '/dashboard', label: 'Dashboard', icon: BarChart3, cap: 'dashboard.view' },
   { href: '/underwriter', label: 'Underwriter', icon: LayoutList, cap: 'applications.view' },
   { href: '/compliance', label: 'Compliance', icon: ShieldCheck, cap: 'compliance.view' },
   { href: '/operations', label: 'Operations', icon: Activity, cap: 'operations.view' },

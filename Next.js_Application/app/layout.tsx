@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 };
 
 const NAV_CAPS: Array<{ href: string; cap: Parameters<typeof can>[1] }> = [
+  { href: '/dashboard', cap: 'dashboard.view' },
   { href: '/underwriter', cap: 'applications.view' },
   { href: '/compliance', cap: 'compliance.view' },
   { href: '/operations', cap: 'operations.view' },
@@ -25,7 +26,7 @@ export default async function RootLayout({
   const allowedHrefs = user ? NAV_CAPS.filter((n) => can(user.role, n.cap)).map((n) => n.href) : [];
 
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="light">
       <body className="min-h-screen bg-background">
         {user && (
           <AppNav

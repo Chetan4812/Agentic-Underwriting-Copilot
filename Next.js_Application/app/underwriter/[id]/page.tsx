@@ -92,8 +92,8 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        {/* Column 1: Applicant Dossier */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        {/* Column 1: Applicant Dossier & Credit Bureau */}
         <div className="space-y-5">
           <Card>
             <CardHeader><CardTitle>Applicant Dossier</CardTitle></CardHeader>
@@ -143,59 +143,59 @@ export default async function CaseDetailPage({ params }: { params: { id: string 
             hardStopViolations={(referral?.partialFindings as any)?.hard_stop_violations ?? []}
           />
         </div>
+      </div>
 
-        {/* Column 3: Adjudication */}
-        <div className="space-y-5">
-          {rec ? (
-            <AdjudicationPanel
-              applicationId={app.skIdCurr}
-              recommendedVerdict={rec.decisionRecommendation}
-              recommendedConfidence={rec.confidence}
-              narrative={rec.explanationNarrative}
-            />
-          ) : referral ? (
-            <Card>
-              <CardHeader><CardTitle>Referral Package</CardTitle></CardHeader>
-              <CardContent className="space-y-3 pt-0">
-                <p className="text-sm">{referral.reasonForReferral}</p>
-                <div className="flex flex-wrap gap-1">
-                  {referral.escalationFlags.map((f) => (
-                    <Badge key={f} variant="warning">{f}</Badge>
-                  ))}
-                </div>
-                <AdjudicationPanel
-                  applicationId={app.skIdCurr}
-                  recommendedVerdict="refer_to_senior"
-                  recommendedConfidence={0}
-                  narrative={referral.reasonForReferral}
-                />
-              </CardContent>
-            </Card>
-          ) : (
-            <Card>
-              <CardHeader><CardTitle>Adjudication</CardTitle></CardHeader>
-              <CardContent className="pt-0 text-sm text-muted-foreground">
-                No assessment yet. Run the AI pipeline to generate a recommendation.
-              </CardContent>
-            </Card>
-          )}
-
-          {app.overrides.length > 0 && (
-            <Card>
-              <CardHeader><CardTitle>Override History</CardTitle></CardHeader>
-              <CardContent className="space-y-2 pt-0">
-                {app.overrides.map((o) => (
-                  <div key={o.id} className="rounded-md border border-border bg-secondary/40 p-2 text-xs">
-                    <p className="font-medium">
-                      {o.user.name}: {o.originalVerdict} → {o.overriddenVerdict}
-                    </p>
-                    <p className="mt-1 text-muted-foreground">{o.overrideReason}</p>
-                  </div>
+      {/* Section 3: Adjudication & Override History (Rendered Full-Width Below) */}
+      <div className="space-y-5 pt-2">
+        {rec ? (
+          <AdjudicationPanel
+            applicationId={app.skIdCurr}
+            recommendedVerdict={rec.decisionRecommendation}
+            recommendedConfidence={rec.confidence}
+            narrative={rec.explanationNarrative}
+          />
+        ) : referral ? (
+          <Card>
+            <CardHeader><CardTitle>Referral Package</CardTitle></CardHeader>
+            <CardContent className="space-y-3 pt-0">
+              <p className="text-sm">{referral.reasonForReferral}</p>
+              <div className="flex flex-wrap gap-1">
+                {referral.escalationFlags.map((f) => (
+                  <Badge key={f} variant="warning">{f}</Badge>
                 ))}
-              </CardContent>
-            </Card>
-          )}
-        </div>
+              </div>
+              <AdjudicationPanel
+                applicationId={app.skIdCurr}
+                recommendedVerdict="refer_to_senior"
+                recommendedConfidence={0}
+                narrative={referral.reasonForReferral}
+              />
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardHeader><CardTitle>Adjudication</CardTitle></CardHeader>
+            <CardContent className="pt-0 text-sm text-muted-foreground">
+              No assessment yet. Run the AI pipeline to generate a recommendation.
+            </CardContent>
+          </Card>
+        )}
+
+        {app.overrides.length > 0 && (
+          <Card>
+            <CardHeader><CardTitle>Override History</CardTitle></CardHeader>
+            <CardContent className="grid gap-3 sm:grid-cols-2 pt-0">
+              {app.overrides.map((o) => (
+                <div key={o.id} className="rounded-md border border-border bg-secondary/40 p-3 text-xs">
+                  <p className="font-semibold text-foreground">
+                    {o.user.name}: {o.originalVerdict} → {o.overriddenVerdict}
+                  </p>
+                  <p className="mt-1.5 text-muted-foreground italic font-medium">&ldquo;{o.overrideReason}&rdquo;</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

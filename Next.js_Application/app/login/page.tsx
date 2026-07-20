@@ -10,6 +10,6 @@ export default async function LoginPage({
   searchParams: { next?: string };
 }) {
   const session = await getSession();
-  if (session) redirect(searchParams.next || '/underwriter');
-  return <LoginClient next={searchParams.next || '/underwriter'} />;
+  if (session) redirect(searchParams.next || '/dashboard');
+  return <LoginClient next={searchParams.next || '/dashboard'} />;
 }

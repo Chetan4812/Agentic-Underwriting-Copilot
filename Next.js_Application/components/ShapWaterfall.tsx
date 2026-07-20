@@ -25,13 +25,15 @@ const SAFE = 'hsl(142 71% 45%)';
 // Style/config objects are declared as consts and passed with single braces
 // to keep JSX valid and easy to tweak.
 const chartMargin = { top: 8, right: 48, left: 8, bottom: 8 };
-const axisTick = { fill: 'hsl(210 40% 90%)' };
-const cursorStyle = { fill: 'hsl(217 33% 17% / 0.4)' };
+const axisTick = { fill: 'hsl(215 25% 27%)', fontWeight: 500 };
+const cursorStyle = { fill: 'hsl(210 40% 96.1%)' };
 const tooltipStyle = {
-  background: 'hsl(222 44% 8%)',
-  border: '1px solid hsl(217 33% 20%)',
+  background: 'hsl(0 0% 100%)',
+  border: '1px solid hsl(214.3 31.8% 91.4%)',
   borderRadius: 8,
+  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
   fontSize: 12,
+  color: 'hsl(222.2 84% 4.9%)',
 };
 const riskDot = { background: RISK };
 const safeDot = { background: SAFE };
@@ -64,7 +66,7 @@ export function ShapWaterfall({ factors, baseLogOdds = 0 }: Props) {
             <BarChart layout="vertical" data={data} margin={chartMargin}>
               <XAxis
                 type="number"
-                stroke="hsl(215 20% 65%)"
+                stroke="hsl(215.4 16.3% 46.9%)"
                 fontSize={11}
                 tickFormatter={(v) => v.toFixed(2)}
               />
@@ -72,11 +74,11 @@ export function ShapWaterfall({ factors, baseLogOdds = 0 }: Props) {
                 type="category"
                 dataKey="name"
                 width={150}
-                stroke="hsl(215 20% 65%)"
+                stroke="hsl(215.4 16.3% 46.9%)"
                 fontSize={11}
                 tick={axisTick}
               />
-              <ReferenceLine x={baseLogOdds} stroke="hsl(215 20% 45%)" strokeDasharray="3 3" />
+              <ReferenceLine x={baseLogOdds} stroke="hsl(215.4 16.3% 46.9%)" strokeDasharray="3 3" />
               <Tooltip
                 cursor={cursorStyle}
                 contentStyle={tooltipStyle}
@@ -93,8 +95,9 @@ export function ShapWaterfall({ factors, baseLogOdds = 0 }: Props) {
                   dataKey="value"
                   position="right"
                   formatter={(v: number) => `${v > 0 ? '+' : ''}${v.toFixed(2)}`}
-                  fill="hsl(210 40% 80%)"
+                  fill="hsl(215 25% 27%)"
                   fontSize={10}
+                  fontWeight={500}
                 />
               </Bar>
             </BarChart>

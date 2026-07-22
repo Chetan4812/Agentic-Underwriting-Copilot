@@ -328,9 +328,14 @@ class UnderwritingPipeline:
 
         # Check API key configuration for live generation
         openai_key = os.environ.get("OPENAI_API_KEY")
+        openrouter_key = os.environ.get("OPENROUTER_API_KEY")
         narrative = ""
         
-        if openai_key:
+        if openai_key or openrouter_key:
+            # Set the litellm model to OpenRouter if openrouter_key is used
+            model_name = "openrouter/openai/gpt-4o-mini" if openrouter_key else "gpt-4o-mini"
+            # If using openrouter, litellm looks for OPENROUTER_API_KEY automatically
+            
             # Call LiteLLM for generation step
             prompt = f"""
             Write a detailed, formal underwriting explanation for Halcyon Credit.
@@ -346,7 +351,7 @@ class UnderwritingPipeline:
             """
             try:
                 response = litellm.completion(
-                    model="gpt-4o-mini",
+                    model=model_name,
                     messages=[{"role": "user", "content": prompt}],
                     max_tokens=350,
                     temperature=0.0

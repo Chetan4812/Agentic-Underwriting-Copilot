@@ -1,0 +1,64 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches:
+      - main
+      - Anirudh
+      - Chetan
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Log in to Azure Container Registry
+        run: az acr login -n acrunderwritingxcady
+
+      - name: Build and Push Backend Image
+        run: |
+          docker build -f backend.Dockerfile -t acrunderwritingxcady.azurecr.io/backend:${{ github.sha }} .
+          docker push acrunderwritingxcady.azurecr.io/backend:${{ github.sha }}
+
+      - name: Build and Push Frontend Image
+        run: |
+          cd Next.js_Application
+          docker build -f Dockerfile -t acrunderwritingxcady.azurecr.io/frontend:${{ github.sha }} .
+          docker push acrunderwritingxcady.azurecr.io/frontend:${{ github.sha }}
+
+      - name: Deploy Backend to Container Apps
+        run: |
+          az containerapp create \
+            --name backend-app \
+            --resource-group rg-underwriting-copilot \
+            --environment cae-underwriting \
+            --image acrunderwritingxcady.azurecr.io/backend:${{ github.sha }} \
+            --target-port 8000 \
+            --ingress external \
+            --env-vars "DATABASE_URL=postgresql://copilot:CopilotSecureP@ssw0rd1!@pg-underwriting-xcady.postgres.database.azure.com:5432/underwriting?schema=public" "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" \
+            --volumes name=chromadb-mount-2,storageName=chromadb-mount-2,storageType=AzureFile \
+            --volume-mounts volumeName=chromadb-mount-2,mountPath=/app/app_chroma_db
+
+      - name: Get Backend URL
+        id: backend_url
+        run: |
+          BACKEND_URL=$(az containerapp show --name backend-app --resource-group rg-underwriting-copilot --query properties.configuration.ingress.fqdn -o tsv)
+          echo "BACKEND_URL=https://$BACKEND_URL" >> $GITHUB_ENV
+
+      - name: Deploy Frontend to Container Apps
+        run: |
+          az containerapp create \
+            --name frontend-app \
+            --resource-group rg-underwriting-copilot \
+            --environment cae-underwriting \
+            --image acrunderwritingxcady.azurecr.io/frontend:${{ github.sha }} \
+            --target-port 3000 \
+            --ingress external \
+            --env-vars "DATABASE_URL=postgresql://copilot:CopilotSecureP@ssw0rd1!@pg-underwriting-xcady.postgres.database.azure.com:5432/underwriting?schema=public" "AI_SERVICE_BASE_URL=${{ env.BACKEND_URL }}"

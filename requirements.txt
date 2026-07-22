@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pandas
+langfuse
+litellm
+chromadb
+xgboost
+shap
+numpy
+pydantic
+python-dotenv

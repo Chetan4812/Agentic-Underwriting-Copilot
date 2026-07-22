@@ -26,7 +26,11 @@ class UnderwritingPipeline:
         self.retriever = UnderwritingRetriever(db_path=db_path, chunk_strategy=chunk_strategy, chunk_size=chunk_size)
         self.risk_model = CalibratedRiskModel()
         try:
-            self.precomputed_features = pd.read_pickle("input/precomputed_features.pkl").set_index("SK_ID_CURR")
+            import os
+            if os.path.exists("app_chroma_db/precomputed_features.pkl"):
+                self.precomputed_features = pd.read_pickle("app_chroma_db/precomputed_features.pkl").set_index("SK_ID_CURR")
+            else:
+                self.precomputed_features = pd.read_pickle("input/precomputed_features.pkl").set_index("SK_ID_CURR")
         except Exception:
             self.precomputed_features = None
 

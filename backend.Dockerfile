@@ -8,7 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the app directory and input directory
 COPY app/ ./app/
-COPY input/ ./input/
 
 # Copy the chroma db directory if it exists
 COPY app_chroma_db/ ./app_chroma_db/

@@ -42,9 +42,7 @@ jobs:
             --image acrunderwritingxcady.azurecr.io/backend:${{ github.sha }} \
             --target-port 8000 \
             --ingress external \
-            --env-vars "DATABASE_URL=postgresql://copilot:CopilotSecureP@ssw0rd1!@pg-underwriting-xcady.postgres.database.azure.com:5432/underwriting?schema=public" "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" \
-            --volumes name=chromadb-mount-2,storageName=chromadb-mount-2,storageType=AzureFile \
-            --volume-mounts volumeName=chromadb-mount-2,mountPath=/app/app_chroma_db
+            --env-vars "DATABASE_URL=postgresql://copilot:CopilotSecureP@ssw0rd1!@pg-underwriting-xcady.postgres.database.azure.com:5432/underwriting?schema=public" "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}"
 
       - name: Get Backend URL
         id: backend_url

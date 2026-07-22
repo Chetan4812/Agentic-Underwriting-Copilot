@@ -35,6 +35,9 @@ jobs:
 
       - name: Deploy Backend to Container Apps
         run: |
+          ACR_USERNAME=$(az acr credential show -n acrunderwritingxcady --query username -o tsv)
+          ACR_PASSWORD=$(az acr credential show -n acrunderwritingxcady --query passwords[0].value -o tsv)
+
           az containerapp create \
             --name backend-app \
             --resource-group rg-underwriting-copilot \
@@ -42,6 +45,9 @@ jobs:
             --image acrunderwritingxcady.azurecr.io/backend:${{ github.sha }} \
             --target-port 8000 \
             --ingress external \
+            --registry-server acrunderwritingxcady.azurecr.io \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
             --env-vars "DATABASE_URL=postgresql://copilot:CopilotSecureP@ssw0rd1!@pg-underwriting-xcady.postgres.database.azure.com:5432/underwriting?schema=public" "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}"
 
       - name: Get Backend URL
@@ -52,6 +58,9 @@ jobs:
 
       - name: Deploy Frontend to Container Apps
         run: |
+          ACR_USERNAME=$(az acr credential show -n acrunderwritingxcady --query username -o tsv)
+          ACR_PASSWORD=$(az acr credential show -n acrunderwritingxcady --query passwords[0].value -o tsv)
+
           az containerapp create \
             --name frontend-app \
             --resource-group rg-underwriting-copilot \
@@ -59,4 +68,7 @@ jobs:
             --image acrunderwritingxcady.azurecr.io/frontend:${{ github.sha }} \
             --target-port 3000 \
             --ingress external \
+            --registry-server acrunderwritingxcady.azurecr.io \
+            --registry-username $ACR_USERNAME \
+            --registry-password $ACR_PASSWORD \
             --env-vars "DATABASE_URL=postgresql://copilot:CopilotSecureP@ssw0rd1!@pg-underwriting-xcady.postgres.database.azure.com:5432/underwriting?schema=public" "AI_SERVICE_BASE_URL=${{ env.BACKEND_URL }}"
